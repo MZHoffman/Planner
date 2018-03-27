@@ -10,7 +10,6 @@ class Event extends React.Component {
   }
   transformTime = (event) => {
     let value = event.currentTarget.value;
-    console.log(event.currentTarget.name, "jakis")
 
     let iSitAfternoon = value.includes("p");
     value = value.replace(/\D/g, '');//removing non numeric
@@ -19,8 +18,7 @@ class Event extends React.Component {
     value = value.length < 4 ? `0${value}` : value
     value = value.length > 4 ? (alert("Max 4 digits please"), "0000") : value;
     value = value.length === 4 ? (
-      value.slice(0, -2) > 23 ? (value = "2300") : value,
-      value.substr(-2) > 59 ? (value = "2300") : value,
+      value.slice(0, -2) > 23 ? (value = "2300") : value.substr(-2) > 59 ? (value = "2359") : value,
       `${value.slice(0, -2)}:${value.substr(-2)}`
     ) : value
     let startTimeStamp = false
@@ -35,7 +33,7 @@ class Event extends React.Component {
     if (startTimeStamp) {
       transformedTime["timestamp"] = startTimeStamp;
     }
-    this.props.tidyUpTime(this.props.index, transformedTime)
+    this.props.tidyUpTime(this.props.index, transformedTime, event.currentTarget.name)
   }
 
 
