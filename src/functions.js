@@ -15,6 +15,46 @@ export function timestampToTime(timestamp) {
 export function timeMath(t1, t2, operation) {
     t1 = timeToTimestamp(t1);
     t2 = timeToTimestamp(t2);
-    let result = operation === "add" ? t1 + t2 : operation === "sub" ? t1 - t2 : console.log("add or sub onbly");
+    let result = operation === "add" ? t1 + t2 :
+        operation === "sub" ? t1 - t2 :
+            console.log("add or sub onbly");
     return timestampToTime(result)
+}
+
+export function fixUserInput(value, prevValue) {
+    let isItPM = value.includes("p") ? 43200000 : 0;
+    value = value.replace(/\D/g, '');
+    switch (value.length) {
+        case 0:
+            console.log("Please enter 1 to 4 digits");
+            value = prevValue;
+            break;
+        case 1:
+            console.log(`0${value}00`);
+            value = `0${value}00`
+            break;
+        case 2:
+            console.log(`${value}00`);
+            value = `${value}00`
+            break;
+        case 3:
+            console.log(`0${value}`);
+            value = `0${value}`
+            break;
+        case 4:
+            console.log(`${value}`, "case 4");
+            value.slice(0, -2) > 23 ?
+                (value = prevValue, console.log("Max 23h!")) :
+                value.substr(-2) > 59 ?
+                    (value = prevValue, console.log("Max 59 min!")) :
+                    value = `${value.slice(0, -2)}:${value.substr(-2)}`;
+            break;
+        default:
+            console.log("Max 4 digits please");
+            value = prevValue;
+    }
+
+    let timeStamp = timeToTimestamp(`${value.slice(0, -2)}:${value.substr(-2)}`);
+    timeStamp = timeStamp < isItPM ? timeStamp + isItPM : timeStamp;
+    return timeStamp;
 }

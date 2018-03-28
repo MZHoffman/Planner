@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { timeToTimestamp, timestampToTime, fixUserInput } from '../functions';
+let prevValue = 0
 class Event extends React.Component {
   handleChange = (event) => {
     const updatedEvent = {
@@ -8,34 +9,24 @@ class Event extends React.Component {
     };
     this.props.updateEvent(this.props.index, updatedEvent);
   }
+  savePrevValue = (event) => {
+    let prevValue = event.currentTarget.value;
+    return prevValue
+  }
   transformTime = (event) => {
-    let value = event.currentTarget.value;
+    let timeStamp = fixUserInput(event.currentTarget.value, prevValue)
 
-    let iSitAfternoon = value.includes("p");
-    value = value.replace(/\D/g, '');//removing non numeric
-    value = value.length === 1 ? `0${value}00` : value //
-    value = value.length < 3 ? `${value}00` : value
-    value = value.length < 4 ? `0${value}` : value
-    value = value.length > 4 ? (alert("Max 4 digits please"), "0000") : value;
-    value = value.length === 4 ? (
-      value.slice(0, -2) > 23 ? (value = "2300") : value.substr(-2) > 59 ? (value = "2359") : value,
-      `${value.slice(0, -2)}:${value.substr(-2)}`
-    ) : value
-    let startTimeStamp = false
-    if (event.currentTarget.name === "start") {
-      startTimeStamp = Date.parse(`1970-1-1 ${value}`);
-      startTimeStamp = iSitAfternoon ? startTimeStamp + 43200000 : startTimeStamp;
-    }
+    let value = timestampToTime(timeStamp)
+
     const transformedTime = {
       ...this.props.event,
       [event.currentTarget.name]: value,
     }
-    if (startTimeStamp) {
-      transformedTime["timestamp"] = startTimeStamp;
+    if (event.currentTarget.name === "start") {
+      transformedTime["timestamp"] = timeStamp;
     }
     this.props.tidyUpTime(this.props.index, transformedTime, event.currentTarget.name)
   }
-
 
   render() {
     return (
@@ -47,14 +38,18 @@ class Event extends React.Component {
           value={this.props.event.start}
           onChange={this.handleChange}
           onBlur={this.transformTime}
+          onFocus={this.savePrevValue}
         />
-        <input type="text" name="end" value={this.props.event.end}
+        <input type="text" name="end"
+          value={this.props.event.end}
           onChange={this.handleChange}
           onBlur={this.transformTime}
+          onFocus={this.savePrevValue}
         />
         <input type="text" name="duration" value={this.props.event.duration}
           onChange={this.handleChange}
           onBlur={this.transformTime}
+          onFocus={this.savePrevValue}
         />
         <input type="text" name="name" value={this.props.event.name}
           onChange={this.handleChange}

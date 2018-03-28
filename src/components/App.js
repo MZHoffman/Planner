@@ -19,15 +19,30 @@ class App extends React.Component {
     events[key] = updatedEvent;
     this.setState({ events });
   }
+
   tidyUpTime = (key, transformedTime, fieldName) => {
+    //console.log(fieldName, key, transformedTime);
     const events = [...this.state.events];
     events[key] = transformedTime;
     events.sort((a, b) => (a.timestamp - b.timestamp));
     if (fieldName === "end") {
-      events.map(e => (e.duration = timeMath(e.end, e.start, "sub")))
+
+      events.map((e, index, events) => {
+        if (events[index + 1]) {
+          events[index + 1].start = e.end;
+          events[index + 1].end = timeMath(
+            events[index + 1].end,
+            events[index + 1].duration,
+            "add");
+          // console.log(events);
+          // console.log(e.end, "end");
+          // console.log(events[index + 1].start, "index");
+        }
+      }
+      )
     }
     events.map(e => (e.end = timeMath(e.start, e.duration, "add")))
-
+    //console.log(events);
     this.setState({ events });
   }
   render() {
@@ -36,7 +51,7 @@ class App extends React.Component {
         <Header subject="Internet Safety" />
         <button onClick={this.loadSampleEvents}>Load sample events</button>
         <button onClick={this.sortByTime}>sort</button>
-        {Object.keys(this.state.events).map(key => <Event
+        {Object.keys(this.state.events).map(key => <Event //to rethink why Ocject.keys
           event={this.state.events[key]}
           key={key}
           index={key}
