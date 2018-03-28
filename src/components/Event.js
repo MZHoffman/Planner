@@ -10,11 +10,12 @@ class Event extends React.Component {
     this.props.updateEvent(this.props.index, updatedEvent);
   }
   savePrevValue = (event) => {
-    let prevValue = event.currentTarget.value;
+    prevValue = event.currentTarget.value;
     return prevValue
   }
   transformTime = (event) => {
     let timeStamp = fixUserInput(event.currentTarget.value, prevValue)
+    console.log("prev value is: ", prevValue)
 
     let value = timestampToTime(timeStamp)
 
