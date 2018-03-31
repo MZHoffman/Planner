@@ -21,46 +21,46 @@ export function timeMath(t1, t2, operation) {
     return timestampToTime(result)
 }
 
-export function fixUserInput(value, prevValue) {
+export function fixUserInput(value, prevValue = 0) {
     let isItPM = value.includes("p") ? 43200000 : 0;
     value = value.replace(/\D/g, '');
 
     switch (value.length) {
         case 0:
-            console.log("Please enter 1 to 4 digits");
+            // console.log("Please enter 1 to 4 digits");
             value = prevValue;
             break;
         case 1:
-            console.log(`0${value}00`);
+            // console.log(`0${value}00`);
             value = `0${value}00`
             break;
         case 2:
-            console.log(`${value}00`);
+            // console.log(`${value}00`);
             value = `${value}00`
             break;
         case 3:
-            console.log(`0${value}`);
+            // console.log(`0${value}`);
             value = `0${value}`
             break;
         case 4:
-            console.log(value, "case 4");
+            // console.log(value, "case 4");
             break;
         default:
-            console.log("Max 4 digits please");
+            // console.log("Max 4 digits please");
             value = prevValue;
     }
     if (value.slice(0, -2) > 23) {
-        console.log("Max 23h!", value.slice(0, -2))
+        // console.log("Max 23h!", value.slice(0, -2))
         value = prevValue
-        console.log("Max 23h!")
+        // console.log("Max 23h!")
     } else if (value.substr(-2) > 59) {
-        console.log("Max 59 min!", value.substr(-2))
+        //console.log("Max 59 min!", value.substr(-2))
         value = prevValue
-        console.log("Max 59 min!", value, prevValue)
+        // console.log("Max 59 min!", value, prevValue)
     }
-    console.log("the final val ", value)
+    // console.log("the final val ", value)
 
     let timeStamp = timeToTimestamp(`${value.slice(0, -2)}:${value.substr(-2)}`);
-    timeStamp = timeStamp < isItPM ? timeStamp + isItPM : timeStamp;
+    if (timeStamp < isItPM) { timeStamp += isItPM };
     return timeStamp;
 }
