@@ -20,28 +20,37 @@ class App extends React.Component {
     this.setState({ events });
   }
 
-  tidyUpTime = (key, transformedTime, fieldName) => {
-    //console.log(fieldName, key, transformedTime);
-    const events = [...this.state.events];
-    events[key] = transformedTime;
-    events.sort((a, b) => (a.timestamp - b.timestamp));
+  changeEndTimes = () => {
+    const events = this.state.events
+    events.map((e, k) => (e.end = timeMath(e.start, e.duration, "add"
+    )));
+    this.setState({ events })
+  }
 
-    events.map(e => (e.end = timeMath(e.start, e.duration, "add")))
-    //console.log(events);
-    this.setState({ events });
+  updateAllEvents = (key, transformedTime) => {
+    const events = [...this.state.events];
+    console.log("000", this.state.events);
+    console.log("111", JSON.stringify(events));
+    //events[key] = transformedTime;
+    //console.log("222", this.state.events);
+    events[key].start = "11:11";
+    events.sort((a, b) => (a.timestamp - b.timestamp));
+    //console.log("333", this.state.events);
+    this.setState({ events: events });
   }
   render() {
+    //changeEndTimes()
     return (
       <div>
         <Header subject="Internet Safety" />
         <button onClick={this.loadSampleEvents}>Load sample events</button>
-        <button onClick={this.sortByTime}>sort</button>
+        <button onClick={this.changeEndTimes}>changeEndTimes</button>
         {Object.keys(this.state.events).map(key => <Event //to rethink why Ocject.keys
           event={this.state.events[key]}
           key={key}
           index={key}
           updateEvent={this.updateEvent}
-          tidyUpTime={this.tidyUpTime}
+          updateAllEvents={this.updateAllEvents}
         />)}
       </div>
 

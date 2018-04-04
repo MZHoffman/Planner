@@ -16,17 +16,17 @@ class Event extends React.Component {
   transformTime = (event) => {
     let timeStamp = fixUserInput(event.currentTarget.value, prevValue)
     console.log("prev value is: ", prevValue)
-
     let value = timestampToTime(timeStamp)
-
+    console.log(this.props.event)
     const transformedTime = {
       ...this.props.event,
-      [event.currentTarget.name]: value,
+      [event.currentTarget.name]: value
     }
     if (event.currentTarget.name === "start") {
       transformedTime["timestamp"] = timeStamp;
     }
-    this.props.tidyUpTime(this.props.index, transformedTime, event.currentTarget.name)
+    console.log(this.props.event)
+    this.props.updateAllEvents(this.props.index, transformedTime)
   }
 
   render() {
