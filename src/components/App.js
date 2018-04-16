@@ -1,17 +1,19 @@
 import React from 'react';
-import Header from './Header';
 import Event from './Event';
-import sampleEvents from '../sample-events';
-import { timeMath } from '../functions'
+import { timeMath, timeToTimestamp } from '../functions'
 
 class App extends React.Component {
   state = {
-    events: []
-  }
-
-  loadSampleEvents = () => {
-    sampleEvents.sort((a, b) => (a.timestamp - b.timestamp));
-    this.setState({ events: sampleEvents });
+    events: [
+      { start: '08:00', end: '09:03', duration: '01:00', startTimeStamp: 28800000, name: '0Begining' },
+      { start: '10:00', end: '13:03', duration: '01:00', startTimeStamp: 36000000, name: '1Lunch' },
+      { start: '11:00', end: '12:03', duration: '01:00', startTimeStamp: 39600000, name: '2Speech' },
+      { start: '12:00', end: '13:03', duration: '01:00', startTimeStamp: 43200000, name: '3Speech 1' },
+      { start: '13:00', end: '14:03', duration: '01:00', startTimeStamp: 46800000, name: '4Speech' },
+      { start: '14:00', end: '15:03', duration: '01:00', startTimeStamp: 50400000, name: '5Speech' },
+      { start: '15:00', end: '16:03', duration: '01:00', startTimeStamp: 54000000, name: '6Networking' },
+      { start: '16:00', end: '17:03', duration: '01:00', startTimeStamp: 57600000, name: '7End' },
+    ]
   }
 
   updateEvent = (key, updatedEvent) => {
@@ -20,32 +22,92 @@ class App extends React.Component {
     this.setState({ events });
   }
 
-  changeEndTimes = () => {
-    const events = this.state.events
-    events.map((e, k) => (e.end = timeMath(e.start, e.duration, "add"
-    )));
+  changeEndTimes = (events) => { events.map((e, k) => (e.end = timeMath(e.start, e.duration, "add"))); }
+
+  sortEvents = (events) => { events.sort((a, b) => (a.startTimeStamp - b.startTimeStamp)); }
+
+  updateAllEvents = (key, transformedTime, prevValue, fieldName) => {
+    const events = [...this.state.events];
+    // make sure that transformed time is not already taken by other event
+    const isTaken = events.some((e) => e.start === transformedTime.start && e.startTimeStamp === transformedTime.startTimeStamp
+    )
+    console.log(typeof (key), key, fieldName, typeof (fieldName))
+    if (isTaken && fieldName === "start") {
+      events[key][fieldName] = prevValue;
+    } else {
+      events[key] = transformedTime;
+    }
+    if (!isTaken) {
+      const eventB4Sorting = events[key]
+      // console.table(events[key])
+      this.sortEvents(events); // sort only if it wasn't taken (so time changed)
+      key = events.indexOf(eventB4Sorting) // the new key after sorting
+    }
+
+    // this.changeEndTimes(events); //just for this plus
+    if (fieldName === "start") {
+      if (key > 0) { // checks if its not the first event
+        events[key - 1].duration = timeMath(events[key].start, events[key - 1].start, "sub")
+        // change end itme of previous event
+        events[key - 1].end = timeMath(events[key - 1].start, events[key - 1].duration, "add")
+      }
+      // change end time of current event
+      if ((timeToTimestamp(events[key].start) + timeToTimestamp(events[key].duration) > 86340000)) {
+        events[key].duration = "00:00"
+        console.log("Changing duration to 00:00 to avoid going over midnight")
+      }
+      events[key].end = timeMath(events[key].start, events[key].duration, "add")
+      // change future events times
+      events.map((v, k) => {
+        if (k > key) {
+          events[k].start = events[k - 1].end
+          events[k].startTimeStamp = timeToTimestamp(events[k].start)
+          if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
+            events[k].duration = "00:00"
+            console.log("Changing duration to 00:00 to avoid going over midnight")
+          }
+          events[k].end = timeMath(events[k].start, events[k].duration, "add")
+        }
+      }
+      )
+    } else if (fieldName === "end") {
+      events[key].duration = timeMath(events[key].end, events[key].start, "sub")
+      console.log(key, JSON.stringify(events[key].duration))
+      events.map((v, k) => {
+        if (k > key) {
+          events[k].start = events[k - 1].end
+          events[k].startTimeStamp = timeToTimestamp(events[k].start)
+          if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
+            events[k].duration = "00:00"
+            console.log("Changing duration to 00:00 to avoid going over midnight")
+          }
+          events[k].end = timeMath(events[k].start, events[k].duration, "add")
+        }
+      }
+      )
+    } else if (fieldName === "duration") {
+      events[key].end = timeMath(events[key].duration, events[key].start, "add")
+      console.log(key, JSON.stringify(events[key].duration))
+      events.map((v, k) => {
+        if (k > key) {
+          events[k].start = events[k - 1].end
+          events[k].startTimeStamp = timeToTimestamp(events[k].start)
+          if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
+            events[k].duration = "00:00"
+            console.log("Changing duration to 00:00 to avoid going over midnight")
+          }
+          events[k].end = timeMath(events[k].start, events[k].duration, "add")
+        }
+      }
+      )
+    }
     this.setState({ events })
   }
-
-  updateAllEvents = (key, transformedTime) => {
-    const events = [...this.state.events];
-    console.log("000", this.state.events);
-    console.log("111", JSON.stringify(events));
-    //events[key] = transformedTime;
-    //console.log("222", this.state.events);
-    events[key].start = "11:11";
-    events.sort((a, b) => (a.timestamp - b.timestamp));
-    //console.log("333", this.state.events);
-    this.setState({ events: events });
-  }
   render() {
-    //changeEndTimes()
     return (
       <div>
-        <Header subject="Internet Safety" />
-        <button onClick={this.loadSampleEvents}>Load sample events</button>
-        <button onClick={this.changeEndTimes}>changeEndTimes</button>
-        {Object.keys(this.state.events).map(key => <Event //to rethink why Ocject.keys
+        <button onClick={this.changeStartTimes}>changeStartTimes</button>
+        {Object.keys(this.state.events).map(key => <Event // to rethink why Ocject.keys
           event={this.state.events[key]}
           key={key}
           index={key}

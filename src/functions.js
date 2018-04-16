@@ -17,7 +17,7 @@ export function timeMath(t1, t2, operation) {
     t2 = timeToTimestamp(t2);
     let result = operation === "add" ? t1 + t2 :
         operation === "sub" ? t1 - t2 :
-            console.log("add or sub onbly");
+            console.log("add or sub only");
     return timestampToTime(result)
 }
 
@@ -43,7 +43,7 @@ export function fixUserInput(value, prevValue) {
             value = `0${value}`
             break;
         case 4:
-            console.log(value, "case 4");
+            //console.log(value, "case 4");
             break;
         default:
             console.log("Max 4 digits please");
@@ -58,7 +58,7 @@ export function fixUserInput(value, prevValue) {
         value = prevValue
         console.log("Max 59 min!", value, prevValue)
     }
-    console.log("the final val ", value)
+    //console.log("the final val ", value)
 
     let timeStamp = timeToTimestamp(`${value.slice(0, -2)}:${value.substr(-2)}`);
     timeStamp = timeStamp < isItPM ? timeStamp + isItPM : timeStamp;

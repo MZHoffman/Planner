@@ -17,6 +17,7 @@
     "eslint-config-prettier": "^2.9.0",
     "eslint-config-react-app": "^2.1.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-prettier": "^2.6.0",
     "firebase": "4.10.1",
     "moment": "2.21.0",
     "prop-types": "15.6.0",
