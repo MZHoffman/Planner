@@ -29,6 +29,9 @@ class Event extends React.Component {
     const name = event.currentTarget.name
     this.props.updateAllEvents(this.props.index, transformedTime, prevValue, name)
   }
+  handleDel = () => {
+    this.props.delEvent(this.props.index)
+  }
 
   render() {
     return (
@@ -55,6 +58,7 @@ class Event extends React.Component {
         <input type="text" name="name" value={this.props.event.name}
           onChange={this.handleChange}
         />
+        <button onClick={this.handleDel}>Del</button>
       </li>
     );
   }

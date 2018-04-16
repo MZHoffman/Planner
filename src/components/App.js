@@ -22,10 +22,20 @@ class App extends React.Component {
     this.setState({ events });
   }
 
-  changeEndTimes = (events) => { events.map((e, k) => (e.end = timeMath(e.start, e.duration, "add"))); }
-
   sortEvents = (events) => { events.sort((a, b) => (a.startTimeStamp - b.startTimeStamp)); }
 
+  delEvent = (key) => {
+    console.log("Delete event ", key)
+    const events = [...this.state.events];
+    events.splice(key, 1)
+    // change time of the next event
+    if (key > 0) { // checks if its not the first event
+      events[key - 1].duration = timeMath(events[key].start, events[key - 1].start, "sub")
+      // change end itme of previous event
+      events[key - 1].end = timeMath(events[key - 1].start, events[key - 1].duration, "add")
+    }
+    this.setState({ events });
+  }
   updateAllEvents = (key, transformedTime, prevValue, fieldName) => {
     const events = [...this.state.events];
     // make sure that transformed time is not already taken by other event
@@ -51,11 +61,12 @@ class App extends React.Component {
         // change end itme of previous event
         events[key - 1].end = timeMath(events[key - 1].start, events[key - 1].duration, "add")
       }
-      // change end time of current event
+      // if ends after 23:59 set duration to 00:00
       if ((timeToTimestamp(events[key].start) + timeToTimestamp(events[key].duration) > 86340000)) {
         events[key].duration = "00:00"
         console.log("Changing duration to 00:00 to avoid going over midnight")
       }
+      // change end time of current event
       events[key].end = timeMath(events[key].start, events[key].duration, "add")
       // change future events times
       events.map((v, k) => {
@@ -106,13 +117,13 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={this.changeStartTimes}>changeStartTimes</button>
         {Object.keys(this.state.events).map(key => <Event // to rethink why Ocject.keys
           event={this.state.events[key]}
           key={key}
           index={key}
           updateEvent={this.updateEvent}
           updateAllEvents={this.updateAllEvents}
+          delEvent={this.delEvent}
         />)}
       </div>
 
