@@ -28,8 +28,8 @@ class App extends React.Component {
     console.log("Delete event ", key)
     const events = [...this.state.events];
     events.splice(key, 1)
-    // change time of the next event
-    if (key > 0) { // checks if its not the first event
+    // change duration of the prev event
+    if (key > 0 && events[key]) { // checks if its not the first event
       events[key - 1].duration = timeMath(events[key].start, events[key - 1].start, "sub")
       // change end itme of previous event
       events[key - 1].end = timeMath(events[key - 1].start, events[key - 1].duration, "add")
