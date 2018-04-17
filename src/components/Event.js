@@ -35,31 +35,33 @@ class Event extends React.Component {
 
   render() {
     return (
-      <li key={this.props.event.key}>
-        <span>{this.props.event.startTimeStamp}</span>
-        <input type="text" name="start"
-          value={this.props.event.start}
-          onChange={this.handleChange}
-          onBlur={this.transformTime}
-          onFocus={this.savePrevValue}
-        />
-        <input type="text" name="end"
-          value={this.props.event.end}
-          onChange={this.handleChange}
-          onBlur={this.transformTime}
-          onFocus={this.savePrevValue}
-        />
-        <input type="text" name="duration"
-          value={this.props.event.duration}
-          onChange={this.handleChange}
-          onBlur={this.transformTime}
-          onFocus={this.savePrevValue}
-        />
-        <input type="text" name="name" value={this.props.event.name}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleDel}>Del</button>
-      </li>
+      <div>
+        <li key={this.props.event.key}>
+          <span>{this.props.event.startTimeStamp}</span>
+          <input type="text" name="start"
+            value={this.props.event.start}
+            onChange={this.handleChange}
+            onBlur={this.transformTime}
+            onFocus={this.savePrevValue}
+          />
+          <input type="text" name="end"
+            value={this.props.event.end}
+            onChange={this.handleChange}
+            onBlur={this.transformTime}
+            onFocus={this.savePrevValue}
+          />
+          <input type="text" name="duration"
+            value={this.props.event.duration}
+            onChange={this.handleChange}
+            onBlur={this.transformTime}
+            onFocus={this.savePrevValue}
+          />
+          <input type="text" name="name" value={this.props.event.name}
+            onChange={this.handleChange}
+          />
+          <button onClick={this.handleDel}>Del</button>
+        </li>
+      </div>
     );
   }
 }

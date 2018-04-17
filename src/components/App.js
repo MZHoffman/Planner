@@ -1,5 +1,6 @@
 import React from 'react';
 import Event from './Event';
+import AddEventForm from './AddEventForm';
 import { timeMath, timeToTimestamp } from '../functions'
 
 class App extends React.Component {
@@ -21,9 +22,18 @@ class App extends React.Component {
     events[key] = updatedEvent;
     this.setState({ events });
   }
-
+  lastEventEnd = () => {
+    if (this.state.events.slice(-1)[0]) {
+      return this.state.events.slice(-1)[0].end
+    }
+    return "08:00"
+  }
   sortEvents = (events) => { events.sort((a, b) => (a.startTimeStamp - b.startTimeStamp)); }
-
+  addEvent = (event) => {
+    const events = [...this.state.events];
+    events.push(event)
+    this.setState({ events });
+  }
   delEvent = (key) => {
     console.log("Delete event ", key)
     const events = [...this.state.events];
@@ -125,8 +135,11 @@ class App extends React.Component {
           updateAllEvents={this.updateAllEvents}
           delEvent={this.delEvent}
         />)}
+        <AddEventForm
+          lastEventEnd={this.lastEventEnd()}
+          addEvent={this.addEvent}
+        />
       </div>
-
     );
   }
 }
