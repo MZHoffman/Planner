@@ -1,1 +1,4 @@
 node_modules/
+yarn-error.log
+notebook.jsx
+.DS_Store
