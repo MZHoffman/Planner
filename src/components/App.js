@@ -22,30 +22,49 @@ class App extends React.Component {
     events[key] = updatedEvent;
     this.setState({ events });
   }
+
   lastEventEnd = () => {
     if (this.state.events.slice(-1)[0]) {
       return this.state.events.slice(-1)[0].end
     }
     return "08:00"
   }
+
   sortEvents = (events) => { events.sort((a, b) => (a.startTimeStamp - b.startTimeStamp)); }
+
   addEvent = (event) => {
     const events = [...this.state.events];
     events.push(event)
     this.setState({ events });
   }
+
   delEvent = (key) => {
     console.log("Delete event ", key)
     const events = [...this.state.events];
     events.splice(key, 1)
-    // change duration of the prev event
     if (key > 0 && events[key]) { // checks if its not the first event
       events[key - 1].duration = timeMath(events[key].start, events[key - 1].start, "sub")
-      // change end itme of previous event
       events[key - 1].end = timeMath(events[key - 1].start, events[key - 1].duration, "add")
     }
     this.setState({ events });
   }
+  // Updates all events in the array after the one we have changed
+  updateFutureEvents = (events, key) => {
+    events.map((v, k) => {
+      if (k > key) {
+        events[k].start = events[k - 1].end
+        events[k].startTimeStamp = timeToTimestamp(events[k].start)
+        if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
+          events[k].duration = "00:00"
+          console.log("Changing duration to 00:00 to avoid going over midnight")
+        }
+        events[k].end = timeMath(events[k].start, events[k].duration, "add")
+      }
+      return events
+    }
+    )
+  }
+
   updateAllEvents = (key, transformedTime, prevValue, fieldName) => {
     const events = [...this.state.events];
     // make sure that transformed time is not already taken by other event
@@ -59,12 +78,9 @@ class App extends React.Component {
     }
     if (!isTaken) {
       const eventB4Sorting = events[key]
-      // console.table(events[key])
       this.sortEvents(events); // sort only if it wasn't taken (so time changed)
       key = events.indexOf(eventB4Sorting) // the new key after sorting
     }
-
-    // this.changeEndTimes(events); //just for this plus
     if (fieldName === "start") {
       if (key > 0) { // checks if its not the first event
         events[key - 1].duration = timeMath(events[key].start, events[key - 1].start, "sub")
@@ -79,48 +95,16 @@ class App extends React.Component {
       // change end time of current event
       events[key].end = timeMath(events[key].start, events[key].duration, "add")
       // change future events times
-      events.map((v, k) => {
-        if (k > key) {
-          events[k].start = events[k - 1].end
-          events[k].startTimeStamp = timeToTimestamp(events[k].start)
-          if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
-            events[k].duration = "00:00"
-            console.log("Changing duration to 00:00 to avoid going over midnight")
-          }
-          events[k].end = timeMath(events[k].start, events[k].duration, "add")
-        }
-      }
-      )
+      this.updateFutureEvents(events, key)
     } else if (fieldName === "end") {
-      events[key].duration = timeMath(events[key].end, events[key].start, "sub")
-      console.log(key, JSON.stringify(events[key].duration))
-      events.map((v, k) => {
-        if (k > key) {
-          events[k].start = events[k - 1].end
-          events[k].startTimeStamp = timeToTimestamp(events[k].start)
-          if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
-            events[k].duration = "00:00"
-            console.log("Changing duration to 00:00 to avoid going over midnight")
-          }
-          events[k].end = timeMath(events[k].start, events[k].duration, "add")
-        }
+      if (timeToTimestamp(events[key].start) > timeToTimestamp(events[key].end)) {
+        events[key].end = prevValue
       }
-      )
+      events[key].duration = timeMath(events[key].end, events[key].start, "sub")
+      this.updateFutureEvents(events, key)
     } else if (fieldName === "duration") {
       events[key].end = timeMath(events[key].duration, events[key].start, "add")
-      console.log(key, JSON.stringify(events[key].duration))
-      events.map((v, k) => {
-        if (k > key) {
-          events[k].start = events[k - 1].end
-          events[k].startTimeStamp = timeToTimestamp(events[k].start)
-          if ((timeToTimestamp(events[k].start) + timeToTimestamp(events[k].duration) > 86340000)) {
-            events[k].duration = "00:00"
-            console.log("Changing duration to 00:00 to avoid going over midnight")
-          }
-          events[k].end = timeMath(events[k].start, events[k].duration, "add")
-        }
-      }
-      )
+      this.updateFutureEvents(events, key)
     }
     this.setState({ events })
   }
