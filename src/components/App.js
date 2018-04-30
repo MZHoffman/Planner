@@ -64,7 +64,6 @@ class App extends React.Component {
     }
     )
   }
-
   updateAllEvents = (key, transformedTime, prevValue, fieldName) => {
     const events = [...this.state.events];
     // make sure that transformed time is not already taken by other event
