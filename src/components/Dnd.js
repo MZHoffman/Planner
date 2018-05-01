@@ -1,4 +1,5 @@
 import React from 'react'
+import events from '../events'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
 import BigCalendar from 'react-big-calendar'
@@ -11,11 +12,15 @@ const DragAndDropCalendar = withDragAndDrop(BigCalendar)
 class Dnd extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      events,
+    }
+
     this.moveEvent = this.moveEvent.bind(this)
   }
 
   moveEvent({ event, start, end }) {
-    const { events } = this.props
+    const { events } = this.state
 
     const idx = events.indexOf(event)
     const updatedEvent = { ...event, start, end }
@@ -23,19 +28,23 @@ class Dnd extends React.Component {
     const nextEvents = [...events]
     nextEvents.splice(idx, 1, updatedEvent)
 
-    this.props.changeEvents(nextEvents)
+    this.setState({
+      events: nextEvents,
+    })
 
     alert(`${event.title} was dropped onto ${event.start}`)
   }
 
   resizeEvent = (resizeType, { event, start, end }) => {
-    const { events } = this.props
+    const { events } = this.state
 
     const nextEvents = events.map(existingEvent => existingEvent.id == event.id
-      ? { ...existingEvent, start, end }
-      : existingEvent)
+        ? { ...existingEvent, start, end }
+        : existingEvent)
 
-    this.props.changeEvents(nextEvents)
+    this.setState({
+      events: nextEvents,
+    })
 
     alert(`${event.title} was resized to ${start}-${end}`)
   }
@@ -43,24 +52,13 @@ class Dnd extends React.Component {
   render() {
     return (
       <DragAndDropCalendar
-        showMultiDayTimes
         selectable
-        events={this.props.events}
+        events={this.state.events}
         onEventDrop={this.moveEvent}
         resizable
-        views={['day', 'agenda']}
-        scrollToTime={new Date(1970, 1, 1, 6)}
         onEventResize={this.resizeEvent}
-        defaultView="day"
+        defaultView="week"
         defaultDate={new Date(2015, 3, 12)}
-        onSelectEvent={event => alert(event.title)}
-        onSelectSlot={slotInfo =>
-          alert(
-            `selected slot: \n\nstart ${slotInfo.start.toLocaleString()} ` +
-            `\nend: ${slotInfo.end.toLocaleString()}` +
-            `\naction: ${slotInfo.action}`
-          )
-        }
       />
     )
   }
