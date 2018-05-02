@@ -11,6 +11,7 @@ import '../styles.less'
 import '../prism.less'
 import events from '../events'
 
+import EventForm from './EventForm'
 import Selectable from './Selectable'
 
 localizer(globalize)
@@ -18,16 +19,13 @@ localizer(globalize)
 class App extends React.Component {
   state = {
     events,
-    open: false
+    open: false,
+    edit: {}
   }
-  // changeEvents = (newEvents) => {
-  //   console.log('aaa')
-  //   this.setState({
-  //     events: newEvents,
-  //   })
-  // }
+
   editVals = (event) => {
-    this.setState({ open: true })
+
+    this.setState({ open: true, edit: event })
     console.log(event)
   }
   addEvent = (slotInfo) => { console.log(slotInfo) }
@@ -37,17 +35,13 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Menu isOpen={this.state.open}>
-          <a id="home" className="menu-item" href="/">Home</a>
-          <a id="about" className="menu-item" href="/about">About</a>
-          <a id="contact" className="menu-item" href="/contact">Contact</a>
-          <a onClick={this.showSettings} className="menu-item--small" href="">Settings</a>
+        <Menu isOpen={this.state.open} width="900px">
+          <EventForm edit={this.state.edit} />
         </Menu>
         <Selectable
-          // events={this.state.events}
+          events={this.state.events}
           editVals={this.editVals}
           addEvent={this.addEvent}
-        // changeEvents={this.changeEvents}
         />
       </div>
     );
