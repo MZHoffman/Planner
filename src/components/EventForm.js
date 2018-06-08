@@ -1,24 +1,45 @@
 import React from 'react'
 
-import 'font-awesome/css/font-awesome.min.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import { timestampToTime } from '../functions'
+import { timestampToTime, fixUserInput } from '../functions'
+import Input from './Input'
 
-import '../styles.less'
-import '../prism.less'
+class EventForm extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
-
-class EventForm extends React.Component {
   render() {
+    const { startHR, endHR, desc, title } = this.props.edit
+    // console.log(start, this.props.edit)
     return (
       <div>
         <span>Edit/Add Event</span>
-        <form>
-          <input value={timestampToTime(Date.parse(this.props.edit.start))} type="text" placeholder="Start" />
-          <input type="text" placeholder="End" />
-          <input type="text" placeholder="Title" />
-          <textarea type="text" placeholder="Description" />
-          <button type="submit">+ Add Event</button>
+        <form className="grid-container">
+          <Input className="grid-item1" type="text"
+            value={startHR}
+            // onBlur={this.fixUserInput(start, start)} // 
+            placeholder="Start"
+            name="start"
+            validation
+            handleChange={this.props.handleChange}
+          />
+          <Input className="grid-item2" type="text"
+            value={endHR}
+            placeholder="End"
+            name="end"
+            validation
+            handleChange={this.props.handleChange}
+          />
+          <Input className="grid-item3" type="text"
+            value={title}
+            placeholder="Title"
+            name="title"
+            handleChange={this.props.handleChange}
+          />
+          <textarea className="grid-item4" type="text"
+            value={desc}
+            placeholder="Description"
+            name="desc"
+            onChange={this.props.handleChange}
+          />
+          <button className="grid-item5" type="submit">+ Add Event</button>
         </form>
       </div>
     );

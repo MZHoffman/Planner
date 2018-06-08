@@ -1,4 +1,4 @@
-input{
+input:not(.grid-item1, .grid-item2){
     width: 50px;
 }
 a{
@@ -645,50 +645,30 @@ button.rbc-input::-moz-focus-inner {
   background-color: #74ad31;
   pointer-events: none;
 }
-/* Position and sizing of burger button */
-.bm-burger-button {
-  position: fixed;
-  width: 36px;
-  height: 30px;
-  left: 36px;
-  top: 36px;
-}
 
-/* Color/shape of burger icon bars */
-.bm-burger-bars {
-  background: #373a47;
+form.grid-container{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) !important;
+  grid-gap: 10px;
+  grid-auto-rows: minmax(200px, 300 px) !important;
 }
-
-/* Position and sizing of clickable cross button */
-.bm-cross-button {
-  height: 24px;
-  width: 24px;
+input.grid-item1 {
+  grid-column: 1 / 2 !important;
+  grid-row: 1!important;
 }
-
-/* Color/shape of close button cross */
-.bm-cross {
-  background: #bdc3c7;
+input.grid-item2 { 
+  grid-column: 2 / 3;
+  grid-row: 1;
 }
-
-/* General sidebar styles */
-.bm-menu {
-  background: #373a47;
-  padding: 2.5em 1.5em 0;
-  font-size: 1.15em;
+.grid-item3 {
+  grid-column: 3 / 4;
+  grid-row: 1;
 }
-
-/* Morph shape necessary with bubble or elastic */
-.bm-morph-shape {
-  fill: #373a47;
+.grid-item4 {
+  grid-column: 1 / 4;
+  grid-row: 2;
 }
-
-/* Wrapper for item list */
-.bm-item-list {
-  color: #b8b7ad;
-  padding: 0.8em;
-}
-
-/* Styling of overlay */
-.bm-overlay {
-  background: rgba(0, 0, 0, 0.3);
+.grid-item5 {
+  grid-column: 3 / 4;
+  grid-row: 3;
 }

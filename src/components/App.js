@@ -1,11 +1,11 @@
 import React from 'react'
 
+import { ToastContainer, toast } from 'react-toastify';
 import localizer from 'react-big-calendar/lib/localizers/globalize'
 import globalize from 'globalize'
 import 'font-awesome/css/font-awesome.min.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-// import 'react-big-calendar/lib/less/styles.less'
-import { slide as Menu } from 'react-burger-menu'
+import 'react-toastify/dist/ReactToastify.css';
 
 import '../styles.less'
 import '../prism.less'
@@ -13,36 +13,50 @@ import events from '../events'
 
 import EventForm from './EventForm'
 import Selectable from './Selectable'
+import { timestampToTime } from '../functions'
 
 localizer(globalize)
 
 class App extends React.Component {
   state = {
     events,
-    open: false,
-    edit: {}
+    event: { // change name to be descriptive
+      desc: "Enter Description",
+      end: new Date(2015, 4, 12, 0, 0, 0),
+      endHR: "00:00",
+      start: new Date(2015, 4, 12, 0, 0, 0),
+      startHR: "00:00",
+      title: "Event Titile"
+    }
   }
-
-  editVals = (event) => {
-
-    this.setState({ open: true, edit: event })
-    console.log(event)
+  editEvent = (event) => {
+    const startHR = timestampToTime(Date.parse(event.start))
+    const endHR = timestampToTime(Date.parse(event.end))
+    this.setState({ event: { ...event, endHR, startHR } })
   }
-  addEvent = (slotInfo) => { console.log(slotInfo) }
-  showSettings(event) {
-    event.preventDefault();
+  handleChange = ({ target }) => {
+    console.log(target)
+    toast(target);
+    const { value, name } = target
+    const event = { ...this.state.event }
+    event[name] = value
+    this.setState({ event })
   }
   render() {
     return (
       <div>
-        <Menu isOpen={this.state.open} width="900px">
-          <EventForm edit={this.state.edit} />
-        </Menu>
+        <EventForm
+          isOpen={this.state.open}
+          edit={this.state.event}
+          newEvent={this.newEvent}
+          handleChange={this.handleChange} // why i dont tha to pass event here?
+        />
         <Selectable
           events={this.state.events}
-          editVals={this.editVals}
+          editEvent={this.editEvent}
           addEvent={this.addEvent}
         />
+        <ToastContainer />
       </div>
     );
   }
